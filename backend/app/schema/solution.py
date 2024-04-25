@@ -7,8 +7,8 @@ class solutionBase(SQLModel):
     solution : str = Field(nullable=False)
     solution_link : Optional[str] = Field(default=None)
     date_submitted : date = Field(default=date.today())
-    user_id : Optional[int] = Field(default=None,foreign_key="user.id")
-    problemstatment_id : Optional[int] = Field(default=None,foreign_key="problemstatment.id")
+    user_id : Optional[int] = Field(default=None,foreign_key="users.id")
+    problemstatment_id : Optional[int] = Field(default=None,foreign_key="problemstatement.id")
 
 class solutionCreate(solutionBase):
     pass

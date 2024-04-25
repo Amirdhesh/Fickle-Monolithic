@@ -6,7 +6,7 @@ class problemstatmentBase(SQLModel):
     Name : str = Field(index=True,unique=True)
     problemstatment : str = Field(nullable=False)
     created_date : date = Field(default=date.today())
-    user_id : Optional[int] = Field(default=None,foreign_key="user.id")
+    user_id : Optional[int] = Field(default=None,foreign_key="users.id")
 
 class problemstatementCreate(problemstatmentBase):
     pass
