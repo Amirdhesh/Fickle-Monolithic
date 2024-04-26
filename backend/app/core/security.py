@@ -9,7 +9,7 @@ from app.core.settings import settings
 
 async def create_token(id : UUID , email : str):
     ist = timezone("Asia/kolkata")
-    expiry = datetime.now(ist) + timedelta(hours= 18)
+    expiry = datetime.now(ist) + timedelta(hours= settings.JWT_EXPIRY_TIME)
     payload= {"id" : str(id),"email":email,"exp" : expiry}
     token = jwt.encode(payload,settings.JWT_SECRET_KEY,settings.JWT_ALGORITHM)
     return token
