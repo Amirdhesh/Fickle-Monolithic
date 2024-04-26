@@ -1,3 +1,4 @@
-from app.schema.problemstatement import problemstatmentBase
-from app.schema.solution import solutionBase
-from app.schema.user import userBase
+from app.schema.problemstatement import *
+from app.schema.solution import *
+from app.schema.user import *
+from app.schema.baseuuid import *
