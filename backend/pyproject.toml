@@ -1,23 +1,29 @@
 [tool.poetry]
-name = "app"
+name = "backend"
 version = "0.1.0"
 description = ""
 authors = ["Amirdhesh <amirdhesh2003@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
-fastapi = "^0.110.1"
+python = "^3.12"
+fastapi = "^0.110.2"
 sqlmodel = "^0.0.16"
 pytest = "^8.1.1"
 httpx = "^0.27.0"
 alembic = "^1.13.1"
 asyncpg = "^0.29.0"
 pydantic-settings = "^2.2.1"
-python-jose = "^3.3.0"
 celery = "^5.4.0"
 redis = "^5.0.4"
+bcrypt = "^4.1.2"
+pytz = "^2024.1"
+pyjwt = "^2.8.0"
+uvicorn = "^0.29.0"
 
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.4.2"
 
 [build-system]
 requires = ["poetry-core"]
