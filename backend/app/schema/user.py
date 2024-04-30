@@ -1,11 +1,12 @@
 from sqlmodel import SQLModel, Field
 from typing import Optional
-from app.schema import baseUUID
+from app.schema.baseuuid import baseUUID
 
 
 class userBase(SQLModel):
     Name: str = Field(index=True)
     email: str = Field(unique=True)
+    email_verified: bool = Field(default=False)
     password: str
     about: Optional[str] = Field(default=None)
 

@@ -1,13 +1,14 @@
 from sqlmodel import SQLModel, Field
 from typing import Optional
 from datetime import date
-from app.schema import baseUUID
+from app.schema.baseuuid import baseUUID
+from uuid import UUID
 
 
 class problemstatmentBase(SQLModel):
     Name: str = Field(index=True, unique=True)
     problemstatment: str = Field(nullable=False)
-    user_id: Optional[int] = Field(default=None, foreign_key="users.id")
+    user_id: Optional[UUID] = Field(default=None, foreign_key="users.id")
 
 
 class problemstatementCreate(problemstatmentBase):

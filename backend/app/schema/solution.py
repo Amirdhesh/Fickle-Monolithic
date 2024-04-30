@@ -1,13 +1,14 @@
 from sqlmodel import SQLModel, Field
 from typing import Optional
-from app.schema import baseUUID
+from app.schema.baseuuid import baseUUID
+from uuid import UUID
 
 
 class solutionBase(SQLModel):
     solution: str = Field(nullable=False)
     solution_link: Optional[str] = Field(default=None)
-    user_id: Optional[int] = Field(default=None, foreign_key="users.id")
-    problemstatment_id: Optional[int] = Field(
+    user_id: Optional[UUID] = Field(default=None, foreign_key="users.id")
+    problemstatment_id: Optional[UUID] = Field(
         default=None, foreign_key="problemstatement.id"
     )
 
