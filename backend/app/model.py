@@ -4,11 +4,13 @@ from app.schema import problemstatmentBase
 from app.schema import userBase
 from app.schema import solutionBase
 from app.schema import baseUUID
+from uuid import UUID
 
 
 class Users(baseUUID, userBase, table=True):
     problemstatement: List["Problemstatement"] = Relationship(back_populates="user")
     solution: List["Solution"] = Relationship(back_populates="user")
+    like: List["Like"] = Relationship(back_populates="user")
 
 
 class Problemstatement(baseUUID, problemstatmentBase, table=True):
@@ -24,17 +26,17 @@ class Solution(baseUUID, solutionBase, table=True):
 
 class Like(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    user_id: Optional[int] = Field(default=None, foreign_key="users.id")
-    problemstatement_id: Optional[int] = Field(
+    user_id: Optional[UUID] = Field(default=None, foreign_key="users.id")
+    problemstatement_id: Optional[UUID] = Field(
         default=None, foreign_key="problemstatement.id"
     )
     user: Users = Relationship(back_populates="like")
-    problemstatement: "Problemstatement" = Relationship(back_populates="like")
+    problemstatement: Problemstatement = Relationship(back_populates="like")
 
 
 class Wishlist(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    user_id: Optional[int] = Field(default=None, foreign_key="users.id")
-    problemstatement_id: Optional[int] = Field(
+    user_id: Optional[UUID] = Field(default=None, foreign_key="users.id")
+    problemstatement_id: Optional[UUID] = Field(
         default=None, foreign_key="problemstatement.id"
     )
