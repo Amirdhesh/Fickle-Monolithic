@@ -3,7 +3,7 @@ from app.core.db_init import async_session,redis_connection
 from app.core.settings import settings
 from app.core.security import user_credentials
 from app.schema.user import loginUser,message
-from app.crud.user import login_user
+from app.crud.user import login_user,forget_password_otp
 
 route = APIRouter()
 
@@ -23,7 +23,13 @@ async def logout_user(*,response:Response,token:str):
     response.delete_cookie("fickel_token")
     data = await user_credentials(token)
     await redis_connection.delete(f"access_token_{data.id}")
-    print("Hello")
     return message(
         message="Logout successfull👍."
+    )
+
+
+@route.get('/forget_password/{emailid}',status_code=204)
+async def forget_password(*,session:async_session,email:str):
+    return message(
+        message=(await forget_password_otp(session=session,email=email))
     )
