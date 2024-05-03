@@ -6,7 +6,9 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from app.core.security import hash_password,check_pw,create_token
 from app.schema.user import userCreate, userLogin, userRead, userUpdate,loginUser,changePassword
-from uuid import UUID
+from uuid import UUID,uuid4
+from app.celery_worker import send_email_for_forget_password
+from app.core.db_init import redis_connection
 
 async def add_user(*, session: AsyncSession, user_create: userCreate):
     try:
@@ -71,3 +73,25 @@ async def change_password(*,session:AsyncSession,id:UUID,password:changePassword
             status_code= 400,
             detail={f"Password not changed. {str(e)}"}
         )
+    
+
+async def forget_password_otp(*,session:AsyncSession,email:str):
+    try:
+        statement = select(Users).where(Users.email == email)
+        user = (await session.exec(statement=statement)).one_or_none()
+        if not user:
+            raise ValueError("Invalid Email")
+        otp = str(uuid4().int)[-6:]
+        send_email_for_forget_password.delay(email=email,otp=otp)
+        await redis_connection.setex(
+            name=f'forget_password_otp:{email}',
+            value=otp,
+            time = 600
+        )
+        return f"OTP has been send to the {email}"
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+        
