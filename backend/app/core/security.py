@@ -1,5 +1,6 @@
 import jwt
 import bcrypt
+import secrets
 from fastapi import HTTPException
 from datetime import timedelta, datetime
 from pytz import timezone
@@ -18,10 +19,10 @@ def check_pw(password: str, hashed_password: str):
 
 
 async def create_token(id: UUID, email: str):
-    ist = timezone("Asia/kolkata")
+    ist = timezone("Asia/Kolkata")
     expiry = datetime.now(ist) + timedelta(hours=settings.JWT_EXPIRY_TIME)
-    payload = {"id": str(id), "email": email, "exp": expiry}
-    token = jwt.encode(payload, settings.JWT_SECRET_KEY, settings.JWT_ALGORITHM)
+    payload = {"id": str(id), "email": email, "exp": expiry.timestamp()}
+    token = jwt.encode(payload, settings.JWT_SECRET_KEY, settings.JWT_ALGORITHM) #problem
     await redis_connection.setex(
         name = f'access_token_{id}',
         value = token,
@@ -51,3 +52,13 @@ async def user_credentials(token: str):
         raise ValueError("Invalid Token 3")
     except Exception as e:
         raise HTTPException(status_code=401,detail=f'{e}')
+    
+
+async def email_token(email: str):
+    token = secrets.token_urlsafe(16)
+    await redis_connection.setex(
+        name=f"{email}_token",
+        value=str(token),
+        time=5*60
+    )
+    return str(token)
