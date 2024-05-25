@@ -3,11 +3,12 @@ from fastapi import HTTPException
 from redis.asyncio import Redis
 from sqlalchemy.orm import selectinload
 from sqlmodel import select
+from fastapi.responses import RedirectResponse
 from sqlmodel.ext.asyncio.session import AsyncSession
 from app.core.security import hash_password,check_pw,create_token
 from app.schema.user import userCreate, userLogin, userRead, userUpdate,loginUser,changePassword
 from uuid import UUID,uuid4
-from app.celery_worker import send_email_for_forget_password
+from app.celery_worker import send_otp_for_forget_password
 from app.core.db_init import redis_connection
 
 async def add_user(*, session: AsyncSession, user_create: userCreate):
@@ -28,7 +29,6 @@ async def update_user(*,session: AsyncSession,user_update:userUpdate,id:UUID):
         user = await session.get(Users,id)
         if not user:
             raise ValueError("User with this id not in the database.")
-        print(user_update)
         user_data = user_update.model_dump(exclude_unset=True)
         user.sqlmodel_update(user_data)
         session.add(user)
@@ -53,7 +53,6 @@ async def login_user(*,session:AsyncSession,user_login:loginUser):
             raise ValueError("Invalid password")
         raise ValueError("Invalid Email/Password")
     except Exception as e:
-        print(e)
         raise HTTPException(
             status_code=401,
             detail=f"{e}"
@@ -82,7 +81,7 @@ async def forget_password_otp(*,session:AsyncSession,email:str):
         if not user:
             raise ValueError("Invalid Email")
         otp = str(uuid4().int)[-6:]
-        send_email_for_forget_password.delay(email=email,otp=otp)
+        send_otp_for_forget_password.delay(email,otp)
         await redis_connection.setex(
             name=f'forget_password_otp:{email}',
             value=otp,
@@ -94,4 +93,16 @@ async def forget_password_otp(*,session:AsyncSession,email:str):
             status_code=400,
             detail=str(e)
         )
-        
+
+
+async def verifyemail(*,session:AsyncSession, email:str):
+    try:
+        statement = select(Users).where(Users.email == email)
+        user = (await session.exec(statement=statement)).one()
+        user.email_verified = True
+        session.add(user)
+        await session.commit()
+        await session.refresh(user)
+        return 0
+    except Exception as e:
+        raise Exception(e)
