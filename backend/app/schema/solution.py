@@ -13,8 +13,9 @@ class solutionBase(SQLModel):
     )
 
 
-class solutionCreate(solutionBase):
-    pass
+class solutionCreate(SQLModel):
+    solution: str
+    solution_link: Optional[str]
 
 
 class solutionRead(baseUUID, solutionBase):
@@ -24,3 +25,7 @@ class solutionRead(baseUUID, solutionBase):
 class solutionUpdate(SQLModel):
     solution: Optional[str]
     solution_link: Optional[str]
+
+
+class message(SQLModel):
+    message: str

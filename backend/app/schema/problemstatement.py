@@ -11,8 +11,9 @@ class problemstatmentBase(SQLModel):
     user_id: Optional[UUID] = Field(default=None, foreign_key="users.id")
 
 
-class problemstatementCreate(problemstatmentBase):
-    pass
+class problemstatementCreate(SQLModel):
+    Name: str = Field(index=True, unique=True)
+    problemstatment: str = Field(nullable=False)
 
 
 class problemstatementRead(baseUUID, problemstatmentBase):
@@ -23,3 +24,10 @@ class problemstatementUpdate(SQLModel):
     Name: Optional[str]
     problemstatment: Optional[str]
     created_date: Optional[date]
+
+
+class message(SQLModel):
+    message: str
+
+class problemstatementEdit(SQLModel):
+    problemstatment:str
