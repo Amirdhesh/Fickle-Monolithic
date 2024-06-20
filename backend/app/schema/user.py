@@ -3,6 +3,7 @@ from typing import Optional
 from app.schema.baseuuid import baseUUID
 from uuid import UUID
 
+
 class userBase(SQLModel):
     Name: str = Field(index=True)
     email: str = Field(unique=True)
@@ -36,14 +37,15 @@ class message(SQLModel):
 
 
 class changePassword(SQLModel):
-    new_password:str
-    reenter_password:str
+    new_password: str
+    reenter_password: str
 
 
 class TokenResponse(SQLModel):
-    id:UUID
-    email:str
+    id: UUID
+    email: str
+
 
 class loginUser(SQLModel):
-    email:str
-    password:str
+    email: str
+    password: str

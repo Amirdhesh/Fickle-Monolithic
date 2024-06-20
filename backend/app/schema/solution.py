@@ -2,6 +2,7 @@ from sqlmodel import SQLModel, Field
 from typing import Optional
 from app.schema.baseuuid import baseUUID
 from uuid import UUID
+from datetime import datetime
 
 
 class solutionBase(SQLModel):
@@ -18,8 +19,10 @@ class solutionCreate(SQLModel):
     solution_link: Optional[str]
 
 
-class solutionRead(baseUUID, solutionBase):
-    pass
+class solutionRead(baseUUID, SQLModel):
+    id: UUID
+    solution: Optional[str]
+    solution_link: Optional[str]
 
 
 class solutionUpdate(SQLModel):

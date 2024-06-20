@@ -16,7 +16,6 @@ async def get_async_session() -> AsyncSession:  # type: ignore
         yield session
 
 
-
 redis_connection = Redis(
     host=settings.REDIS_HOST,
     port=settings.REDIS_PORT,

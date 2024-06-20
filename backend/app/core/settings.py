@@ -7,6 +7,7 @@ load_dotenv()
 
 class Settings(BaseSettings):
     DB_URI: str = os.environ.get("postgres_uri")
+    TEST_DB_URI: str = os.environ.get("test_postgres_uri")
     JWT_ALGORITHM: str = os.environ.get("jwt_algorithm")
     JWT_SECRET_KEY: str = os.environ.get("jwt_secret_key")
     JWT_EXPIRY_TIME: int = os.environ.get("jwt_expiry_time")
@@ -22,7 +23,6 @@ class Settings(BaseSettings):
     LOG_FILE_SIZE: str = os.environ.get("log_file_size")
     LOG_FILE_BACKUP: str = os.environ.get("log_file_backup")
     LOGGING_PLATFORM_TOKEN: str = os.environ.get("betterstack_token")
-
 
 
 settings = Settings()

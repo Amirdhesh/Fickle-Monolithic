@@ -17,7 +17,7 @@ class problemstatementCreate(SQLModel):
 
 
 class problemstatementRead(baseUUID, problemstatmentBase):
-    likes_count: int
+    likes: int
 
 
 class problemstatementUpdate(SQLModel):
@@ -29,5 +29,6 @@ class problemstatementUpdate(SQLModel):
 class message(SQLModel):
     message: str
 
+
 class problemstatementEdit(SQLModel):
-    problemstatment:str
+    problemstatment: str
