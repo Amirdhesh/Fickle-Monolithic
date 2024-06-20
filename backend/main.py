@@ -23,20 +23,20 @@ logging.config.fileConfig(fname=settings.LOGGING_INI)
 logger = logging.getLogger(__name__)
 
 
-async def custom_callback(request: Request, response: Response, pexpire: int):
-    expire = ceil(pexpire / 1000)
-    raise HTTPException(
-        status_code=492, detail=f"Too Many Requests. Retry after {expire} seconds."
-    )
+# async def custom_callback(request: Request, response: Response, pexpire: int):
+#     expire = ceil(pexpire / 1000)
+#     raise HTTPException(
+#         status_code=492, detail=f"Too Many Requests. Retry after {expire} seconds."
+#     )
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    await FastAPILimiter.init(redis=redis_connection, http_callback=custom_callback)
+    # await FastAPILimiter.init(redis=redis_connection, http_callback=custom_callback)
     logger.info("<<<Staring API server...>>>")
     yield
     logger.info("<<<Shuting down API server...>>>")
-    await FastAPILimiter.close()
+    # await FastAPILimiter.close()
 
 
 app = FastAPI(
