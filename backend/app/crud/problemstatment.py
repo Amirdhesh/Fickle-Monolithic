@@ -5,6 +5,8 @@ from sqlalchemy.sql import func
 from sqlalchemy.ext.asyncio.session import AsyncSession
 from app.schema.problemstatement import problemstatementCreate, problemstatementEdit
 from app.model import Problemstatement, Like, Wishlist
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 
 
 async def add_problemstatement(
@@ -131,8 +133,28 @@ async def delete_wishlist(
 
 async def display_wishlist(*, session: AsyncSession, user_id: UUID):
     try:
-        statement = select(Wishlist).where(Wishlist.user_id == user_id)
-        wishlist = (await session.exec(statement=statement)).all()
+        statement = (
+            select(
+                Wishlist.id,
+                Problemstatement.id,
+                Problemstatement.Name,
+                Problemstatement.created_at,
+                Problemstatement.problemstatment,
+            )
+            .join(Wishlist)
+            .where(Wishlist.user_id == user_id)
+        )
+        rows = (await session.exec(statement=statement)).all()
+        wishlist = [
+            {
+                "id": row[0],
+                "problemstatement_id": row[1],
+                "Name": row[2],
+                "created_at": row[3],
+                "problemstatement": row[4],
+            }
+            for row in rows
+        ]
         return wishlist
     except Exception as e:
-        raise HTTPException(status_code=404, detail="Not found.")
+        raise HTTPException(status_code=404, detail=f"Not found.{e}")

@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, HTTPException, Cookie
+from fastapi import APIRouter, Cookie
 from app.core.security import user_credentials
 from app.core.db_init import async_session
 from app.schema.solution import solutionCreate, message, solutionUpdate, solutionRead

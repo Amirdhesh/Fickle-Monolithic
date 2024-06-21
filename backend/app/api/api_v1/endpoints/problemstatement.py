@@ -1,5 +1,5 @@
-from typing import Annotated
-from fastapi import APIRouter, Cookie, HTTPException
+from typing import Annotated, List
+from fastapi import APIRouter, Cookie
 from app.core.security import user_credentials
 from app.core.db_init import async_session
 from app.schema.problemstatement import (
@@ -14,9 +14,6 @@ from app.crud.problemstatment import (
     problemstatement_edit,
     display_problemstatements,
     like,
-    add_problemstatement_to_wishlist,
-    display_wishlist,
-    delete_wishlist,
 )
 
 route = APIRouter()
@@ -85,12 +82,11 @@ async def like_problemstatement(
 @route.get(
     "/display_problemstatements",
     status_code=200,
-    response_model=list[problemstatementRead],
+    response_model=List[problemstatementRead],
 )
 async def display_problemstatment(
     *, session: async_session, fickel_token: Annotated[str | None, Cookie()] = None
 ):
-    data = await user_credentials(token=fickel_token)
+    await user_credentials(token=fickel_token)
     problemstatements = await display_problemstatements(session=session)
-    print(problemstatements)
     return problemstatements

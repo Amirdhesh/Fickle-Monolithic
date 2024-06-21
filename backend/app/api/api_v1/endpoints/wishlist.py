@@ -1,13 +1,8 @@
-from typing import Annotated
+from typing import Annotated, List
 from fastapi import APIRouter, Cookie, HTTPException
 from app.core.security import user_credentials
 from app.core.db_init import async_session
-from app.schema.problemstatement import (
-    problemstatementCreate,
-    message,
-    problemstatementEdit,
-    problemstatementRead,
-)
+from app.schema.problemstatement import message, problemstatementwishlist
 from app.crud.problemstatment import (
     add_problemstatement_to_wishlist,
     display_wishlist,
@@ -45,7 +40,9 @@ async def remove_from_wishlist(
     return message(message="Removed from wishlist.")
 
 
-@route.get("/display_wishlist", status_code=200)
+@route.get(
+    "/display_wishlist", status_code=200, response_model=List[problemstatementwishlist]
+)
 async def wishlist_display(
     *, session: async_session, fickel_token: Annotated[str | None, Cookie()] = None
 ):

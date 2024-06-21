@@ -5,9 +5,7 @@ from app.core.db_init import async_session, redis_connection
 from app.schema.user import (
     userCreate,
     userRead,
-    TokenResponse,
     changePassword,
-    userUpdate,
 )
 from app.crud.user import add_user, change_password, verifyemail
 from app.core.security import create_token, user_credentials, email_token

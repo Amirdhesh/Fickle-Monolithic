@@ -3,6 +3,7 @@ from typing import Optional
 from datetime import date
 from app.schema.baseuuid import baseUUID
 from uuid import UUID
+from datetime import datetime
 
 
 class problemstatmentBase(SQLModel):
@@ -32,3 +33,11 @@ class message(SQLModel):
 
 class problemstatementEdit(SQLModel):
     problemstatment: str
+
+
+class problemstatementwishlist(SQLModel):
+    id: int
+    problemstatement_id: UUID
+    Name: str
+    created_at: datetime
+    problemstatement: str
