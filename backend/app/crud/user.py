@@ -1,7 +1,5 @@
 from app.model import Users
 from fastapi import HTTPException
-from redis.asyncio import Redis
-from sqlalchemy.orm import selectinload
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from app.core.security import hash_password, check_pw, create_token

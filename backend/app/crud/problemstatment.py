@@ -3,10 +3,8 @@ from uuid import UUID
 from sqlmodel import select
 from sqlalchemy.sql import func
 from sqlalchemy.ext.asyncio.session import AsyncSession
-from app.schema.problemstatement import problemstatementCreate, problemstatementEdit
+from app.schema.problemstatement import problemstatementCreate
 from app.model import Problemstatement, Like, Wishlist
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
 
 
 async def add_problemstatement(
@@ -157,4 +155,4 @@ async def display_wishlist(*, session: AsyncSession, user_id: UUID):
         ]
         return wishlist
     except Exception as e:
-        raise HTTPException(status_code=404, detail=f"Not found.{e}")
+        raise HTTPException(status_code=404, detail=f"Not found.")

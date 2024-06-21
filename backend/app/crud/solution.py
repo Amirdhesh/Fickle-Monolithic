@@ -1,8 +1,7 @@
 from uuid import UUID
 from sqlmodel import select
-from app.model import Solution, Problemstatement, Users
+from app.model import Solution
 from fastapi import HTTPException
-from sqlalchemy.orm import selectinload
 from app.schema.solution import solutionCreate, solutionUpdate
 from sqlalchemy.ext.asyncio.session import AsyncSession
 from app.crud.problemstatment import verify_problemstatment
