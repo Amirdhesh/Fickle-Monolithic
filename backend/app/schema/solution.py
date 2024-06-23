@@ -32,3 +32,9 @@ class solutionUpdate(SQLModel):
 
 class message(SQLModel):
     message: str
+
+
+class solutionProfile(baseUUID, SQLModel):
+    solution: Optional[str]
+    solution_link: Optional[str]
+    problemstatement_id: Optional[UUID]

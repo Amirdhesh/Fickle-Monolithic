@@ -2,12 +2,8 @@ from typing import Annotated
 from fastapi import Cookie, APIRouter, Response, HTTPException
 from app.schema.user import userCreate, message
 from app.core.db_init import async_session, redis_connection
-from app.schema.user import (
-    userCreate,
-    userRead,
-    changePassword,
-)
-from app.crud.user import add_user, change_password, verifyemail
+from app.schema.user import userCreate, userRead, changePassword, userProfile
+from app.crud.user import add_user, change_password, verifyemail, profile
 from app.core.security import create_token, user_credentials, email_token
 from app.core.settings import settings
 from app.celery_worker import send_email_verification
@@ -78,7 +74,10 @@ async def Password_change(
     return message(message="User updated successfully.")
 
 
-@route.get("/profile")
-async def profile_user(*, session: async_session, token: str):
-    ...
-    """Display user details along with problem posted by that user"""
+@route.get("/profile", status_code=200, response_model=userProfile)
+async def profile_user(
+    *, session: async_session, fickel_token: Annotated[str | None, Cookie()] = None
+):
+    data = await user_credentials(token=fickel_token)
+    profile_data = await profile(session=session, user_id=data.id)
+    return profile_data

@@ -1,7 +1,9 @@
 from sqlmodel import SQLModel, Field
-from typing import Optional
-from app.schema.baseuuid import baseUUID
+from typing import Optional, List
 from uuid import UUID
+from datetime import datetime
+from app.schema.problemstatement import problemstatementProfile
+from app.schema.solution import solutionProfile
 
 
 class userBase(SQLModel):
@@ -16,8 +18,12 @@ class userCreate(userBase):
     pass
 
 
-class userRead(baseUUID, userBase):
-    pass
+class userRead(SQLModel):
+    id: UUID
+    email_verified: bool
+    about: str
+    name: str
+    created_at: datetime
 
 
 class userUpdate(SQLModel):
@@ -49,3 +55,9 @@ class TokenResponse(SQLModel):
 class loginUser(SQLModel):
     email: str
     password: str
+
+
+class userProfile(SQLModel):
+    user: userRead
+    problemstatements: List[problemstatementProfile]
+    solutions: List[solutionProfile]

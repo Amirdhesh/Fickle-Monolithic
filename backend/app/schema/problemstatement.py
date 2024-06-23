@@ -41,3 +41,8 @@ class problemstatementwishlist(SQLModel):
     Name: str
     created_at: datetime
     problemstatement: str
+
+
+class problemstatementProfile(baseUUID, SQLModel):
+    Name: str
+    problemstatement: str
