@@ -27,8 +27,8 @@ async def add_solution(
         session.add(solution)
         await session.commit()
         await session.refresh(solution)
-    except Exception as e:
-        raise HTTPException(status_code=409, detail=f"Unable to add.{e}")
+    except Exception:
+        raise HTTPException(status_code=409, detail="Unable to add.")
 
 
 async def solution_delete(
@@ -47,8 +47,8 @@ async def solution_delete(
         solution = (await session.exec(statement=statement)).one_or_none()
         await session.delete(solution)
         await session.commit()
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=f"Not Found.")
+    except Exception:
+        raise HTTPException(status_code=404, detail="Unable to delete")
 
 
 async def update_solution(
@@ -71,18 +71,14 @@ async def update_solution(
         session.add(response)
         await session.commit()
         await session.refresh(response)
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=409, detail="Unable to delete.")
 
 
 async def display_solution(*, session: AsyncSession, problemstatement_id: UUID):
-    statement = select(
-        Solution.id,
-        Solution.solution,
-        Solution.solution_link,
-        Solution.created_at,
-        Solution.updated_at,
-    ).where(Solution.problemstatment_id == problemstatement_id)
+    statement = select(Solution).where(
+        Solution.problemstatment_id == problemstatement_id
+    )
     solutions = (await session.exec(statement=statement)).all()
 
     if not solutions:

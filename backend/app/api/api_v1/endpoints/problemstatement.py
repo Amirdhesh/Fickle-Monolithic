@@ -15,6 +15,7 @@ from app.crud.problemstatment import (
     display_problemstatements,
     like,
 )
+from app.crud.solution import delete_solutions
 
 route = APIRouter()
 
@@ -41,6 +42,7 @@ async def delete_problemstatement(
     fickel_token: Annotated[str | None, Cookie()] = None
 ):
     data = await user_credentials(token=fickel_token)
+    
     await problemstatement_delete(
         session=session, problemstatement_id=problemstatement_id, user_id=data.id
     )

@@ -5,6 +5,7 @@ from sqlalchemy.sql import func
 from sqlalchemy.ext.asyncio.session import AsyncSession
 from app.schema.problemstatement import problemstatementCreate
 from app.model import Problemstatement, Like, Wishlist
+from sqlalchemy import delete
 
 
 async def add_problemstatement(
@@ -18,8 +19,8 @@ async def add_problemstatement(
         await session.commit()
         await session.refresh(problemstatement)
         return problemstatement
-    except Exception as e:
-        raise HTTPException(status_code=409, detail=f"Unable to add. {e}")
+    except Exception:
+        raise HTTPException(status_code=409, detail="Unable to add.")
 
 
 async def problemstatement_delete(
@@ -45,6 +46,7 @@ async def problemstatement_edit(
     user_id: UUID,
 ):
     try:
+
         statement = select(Problemstatement).where(
             (Problemstatement.id == problemstatement_id)
             & (Problemstatement.user_id == user_id)
@@ -54,7 +56,7 @@ async def problemstatement_edit(
         session.add(response)
         await session.commit()
         await session.refresh(response)
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=404, detail="Not Found.")
 
 
@@ -83,7 +85,7 @@ async def like(*, session: AsyncSession, problemstatement_id: UUID, user_id: UUI
 async def display_problemstatements(*, session: AsyncSession):
     statement = (
         select(Problemstatement, func.coalesce(func.count(Like.id), 0).label("likes"))
-        .join(Like)
+        .outerjoin(Like,Problemstatement.id == Like.problemstatement_id)
         .group_by(Problemstatement.id)
     )
     rows = (await session.exec(statement=statement)).all()
@@ -110,8 +112,8 @@ async def add_problemstatement_to_wishlist(
         await session.commit()
         await session.refresh(wish)
         return wish
-    except Exception as e:
-        raise HTTPException(status_code=409, detail=f"Unable to add. {e}")
+    except Exception:
+        raise HTTPException(status_code=409, detail="Unable to add.")
 
 
 async def delete_wishlist(
@@ -125,7 +127,7 @@ async def delete_wishlist(
         problemstatement = (await session.exec(statement=statement)).one_or_none()
         await session.delete(problemstatement)
         await session.commit()
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=409, detail="Unable to delete.")
 
 
@@ -154,5 +156,5 @@ async def display_wishlist(*, session: AsyncSession, user_id: UUID):
             for row in rows
         ]
         return wishlist
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=f"Not found.")
+    except Exception:
+        raise HTTPException(status_code=404, detail="Not found.")

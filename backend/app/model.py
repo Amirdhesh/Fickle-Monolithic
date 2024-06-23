@@ -15,8 +15,12 @@ class Users(baseUUID, userBase, table=True):
 
 class Problemstatement(baseUUID, problemstatmentBase, table=True):
     user: Users = Relationship(back_populates="problemstatement")
-    solution: List["Solution"] = Relationship(back_populates="problemstatement")
-    like: List["Like"] = Relationship(back_populates="problemstatement")
+    solution: List["Solution"] = Relationship(back_populates="problemstatement" ,sa_relationship_kwargs={"cascade": "all, delete"})
+    like: List["Like"] = Relationship(back_populates="problemstatement", sa_relationship_kwargs={"cascade": "all, delete"})
+    wishlists: List["Wishlist"] = Relationship(
+        back_populates="problemstatement",
+        sa_relationship_kwargs={"cascade": "all, delete"}
+    )
 
 
 class Solution(baseUUID, solutionBase, table=True):
@@ -40,3 +44,4 @@ class Wishlist(SQLModel, table=True):
     problemstatement_id: Optional[UUID] = Field(
         default=None, foreign_key="problemstatement.id"
     )
+    problemstatement: Problemstatement = Relationship(back_populates="wishlists")
