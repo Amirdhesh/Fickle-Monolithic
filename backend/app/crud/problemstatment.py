@@ -5,10 +5,9 @@ from sqlalchemy.sql import func
 from sqlalchemy.ext.asyncio.session import AsyncSession
 from app.schema.problemstatement import problemstatementCreate
 from app.model import Problemstatement, Like, Wishlist
-from sqlalchemy import delete
 
 
-async def add_problemstatement(
+async def post(
     *, session: AsyncSession, problemstatement: problemstatementCreate, user_id: UUID
 ):
     try:
@@ -23,9 +22,7 @@ async def add_problemstatement(
         raise HTTPException(status_code=409, detail="Unable to add.")
 
 
-async def problemstatement_delete(
-    *, session: AsyncSession, problemstatement_id: UUID, user_id: UUID
-):
+async def delete(*, session: AsyncSession, problemstatement_id: UUID, user_id: UUID):
     try:
         statement = select(Problemstatement).where(
             (Problemstatement.id == problemstatement_id)
@@ -38,7 +35,7 @@ async def problemstatement_delete(
         raise HTTPException(status_code=409, detail="Unable to delete.")
 
 
-async def problemstatement_edit(
+async def edit(
     *,
     session: AsyncSession,
     problemstatement: str,
@@ -46,7 +43,6 @@ async def problemstatement_edit(
     user_id: UUID,
 ):
     try:
-
         statement = select(Problemstatement).where(
             (Problemstatement.id == problemstatement_id)
             & (Problemstatement.user_id == user_id)
@@ -85,7 +81,7 @@ async def like(*, session: AsyncSession, problemstatement_id: UUID, user_id: UUI
 async def display_problemstatements(*, session: AsyncSession):
     statement = (
         select(Problemstatement, func.coalesce(func.count(Like.id), 0).label("likes"))
-        .outerjoin(Like,Problemstatement.id == Like.problemstatement_id)
+        .outerjoin(Like, Problemstatement.id == Like.problemstatement_id)
         .group_by(Problemstatement.id)
     )
     rows = (await session.exec(statement=statement)).all()
@@ -156,5 +152,17 @@ async def display_wishlist(*, session: AsyncSession, user_id: UUID):
             for row in rows
         ]
         return wishlist
+    except Exception:
+        raise HTTPException(status_code=404, detail="Not found.")
+
+
+async def search(session: AsyncSession, problemstatement_name: str):
+    try:
+        statement = select(Problemstatement.id, Problemstatement.Name).filter(
+            Problemstatement.Name.like(f"{problemstatement_name}%")
+        )
+        rows = (await session.exec(statement=statement)).all()
+        problemstatements = [{"id": row.id, "Name": row.Name} for row in rows]
+        return problemstatements
     except Exception:
         raise HTTPException(status_code=404, detail="Not found.")

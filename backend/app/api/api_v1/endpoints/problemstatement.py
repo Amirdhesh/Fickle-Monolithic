@@ -7,15 +7,17 @@ from app.schema.problemstatement import (
     message,
     problemstatementEdit,
     problemstatementRead,
+    problemstatementSearch,
 )
 from app.crud.problemstatment import (
-    add_problemstatement,
-    problemstatement_delete,
-    problemstatement_edit,
+    post,
+    delete,
+    edit,
     display_problemstatements,
     like,
+    search,
 )
-from app.crud.solution import delete_solutions
+
 
 route = APIRouter()
 
@@ -25,12 +27,10 @@ async def post_problemstatement(
     *,
     session: async_session,
     fickel_token: Annotated[str | None, Cookie()] = None,
-    problemstatement: problemstatementCreate
+    problemstatement: problemstatementCreate,
 ):
     data = await user_credentials(token=fickel_token)
-    await add_problemstatement(
-        session=session, problemstatement=problemstatement, user_id=data.id
-    )
+    await post(session=session, problemstatement=problemstatement, user_id=data.id)
     return message(message="Problemstatement added successfully.")
 
 
@@ -39,11 +39,11 @@ async def delete_problemstatement(
     *,
     session: async_session,
     problemstatement_id: str,
-    fickel_token: Annotated[str | None, Cookie()] = None
+    fickel_token: Annotated[str | None, Cookie()] = None,
 ):
     data = await user_credentials(token=fickel_token)
-    
-    await problemstatement_delete(
+
+    await delete(
         session=session, problemstatement_id=problemstatement_id, user_id=data.id
     )
     return message(message="Successfully deleted.")
@@ -55,10 +55,10 @@ async def edit_problemstatement(
     session: async_session,
     problemstatement_id: str,
     problemstatement: problemstatementEdit,
-    fickel_token: Annotated[str | None, Cookie()] = None
+    fickel_token: Annotated[str | None, Cookie()] = None,
 ):
     data = await user_credentials(token=fickel_token)
-    await problemstatement_edit(
+    await edit(
         session=session,
         problemstatement_id=problemstatement_id,
         problemstatement=problemstatement.problemstatment,
@@ -72,7 +72,7 @@ async def like_problemstatement(
     *,
     session: async_session,
     problemstatement_id: str,
-    fickel_token: Annotated[str | None, Cookie()] = None
+    fickel_token: Annotated[str | None, Cookie()] = None,
 ):
     data = await user_credentials(token=fickel_token)
     await like(
@@ -91,4 +91,18 @@ async def display_problemstatment(
 ):
     await user_credentials(token=fickel_token)
     problemstatements = await display_problemstatements(session=session)
+    return problemstatements
+
+
+@route.get("/search", status_code=200, response_model=List[problemstatementSearch])
+async def search_problemstatement(
+    *,
+    session: async_session,
+    problemstatement_name: str,
+    fickel_token: Annotated[str | None, Cookie()] = None,
+):
+    await user_credentials(token=fickel_token)
+    problemstatements = await search(
+        session=session, problemstatement_name=problemstatement_name
+    )
     return problemstatements

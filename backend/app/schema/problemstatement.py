@@ -46,3 +46,8 @@ class problemstatementwishlist(SQLModel):
 class problemstatementProfile(baseUUID, SQLModel):
     Name: str
     problemstatement: str
+
+
+class problemstatementSearch(SQLModel):
+    id: UUID
+    Name: str
