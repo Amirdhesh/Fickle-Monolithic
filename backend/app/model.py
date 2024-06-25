@@ -15,11 +15,17 @@ class Users(baseUUID, userBase, table=True):
 
 class Problemstatement(baseUUID, problemstatmentBase, table=True):
     user: Users = Relationship(back_populates="problemstatement")
-    solution: List["Solution"] = Relationship(back_populates="problemstatement" ,sa_relationship_kwargs={"cascade": "all, delete"})
-    like: List["Like"] = Relationship(back_populates="problemstatement", sa_relationship_kwargs={"cascade": "all, delete"})
+    solution: List["Solution"] = Relationship(
+        back_populates="problemstatement",
+        sa_relationship_kwargs={"cascade": "all, delete"},
+    )
+    like: List["Like"] = Relationship(
+        back_populates="problemstatement",
+        sa_relationship_kwargs={"cascade": "all, delete"},
+    )
     wishlists: List["Wishlist"] = Relationship(
         back_populates="problemstatement",
-        sa_relationship_kwargs={"cascade": "all, delete"}
+        sa_relationship_kwargs={"cascade": "all, delete"},
     )
 
 

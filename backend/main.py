@@ -13,9 +13,9 @@ from fastapi_limiter import FastAPILimiter
 
 config = configparser.ConfigParser()
 config.read(settings.LOGGING_INI)
-config["handler_fileHandler"][
-    "args"
-] = f"('{settings.LOG_FILE_NAME}', {settings.LOG_FILE_SIZE}, {settings.LOG_FILE_BACKUP})"
+config["handler_fileHandler"]["args"] = (
+    f"('{settings.LOG_FILE_NAME}', {settings.LOG_FILE_SIZE}, {settings.LOG_FILE_BACKUP})"
+)
 config.set("handler_LogtailHandler", "args", f"('{settings.LOGGING_PLATFORM_TOKEN}',)")
 with open(settings.LOGGING_INI, "w") as configfile:
     config.write(configfile)

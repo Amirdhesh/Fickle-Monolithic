@@ -4,9 +4,9 @@ from app.core.security import user_credentials
 from app.core.db_init import async_session
 from app.schema.solution import solutionCreate, message, solutionUpdate, solutionRead
 from app.crud.solution import (
-    add_solution,
-    solution_delete,
-    update_solution,
+    contribute,
+    delete,
+    edit,
     display_solution,
 )
 
@@ -19,10 +19,10 @@ async def post_solution(
     session: async_session,
     problemstatement_id: str,
     solution: solutionCreate,
-    fickel_token: Annotated[str | None, Cookie()] = None
+    fickel_token: Annotated[str | None, Cookie()] = None,
 ):
     data = await user_credentials(token=fickel_token)
-    await add_solution(
+    await contribute(
         session=session,
         problemstatement_id=problemstatement_id,
         solution=solution,
@@ -37,10 +37,10 @@ async def delete_solution(
     session: async_session,
     problemstatement_id: str,
     solution_id: str,
-    fickel_token: Annotated[str | None, Cookie()] = None
+    fickel_token: Annotated[str | None, Cookie()] = None,
 ):
     data = await user_credentials(token=fickel_token)
-    await solution_delete(
+    await delete(
         session=session,
         problemstatement_id=problemstatement_id,
         user_id=data.id,
@@ -56,10 +56,10 @@ async def edit_problemstatement(
     problemstatement_id: str,
     solution_id: str,
     solution: solutionUpdate,
-    fickel_token: Annotated[str | None, Cookie()] = None
+    fickel_token: Annotated[str | None, Cookie()] = None,
 ):
     data = await user_credentials(token=fickel_token)
-    await update_solution(
+    await edit(
         session=session,
         problemstatement_id=problemstatement_id,
         solution_id=solution_id,
@@ -78,7 +78,7 @@ async def problemstatement_solutions(
     *,
     session: async_session,
     problemstatement_id: str,
-    fickel_token: Annotated[str | None, Cookie()] = None
+    fickel_token: Annotated[str | None, Cookie()] = None,
 ):
     await user_credentials(token=fickel_token)
     solutions = await display_solution(

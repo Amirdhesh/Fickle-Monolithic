@@ -12,7 +12,6 @@ route = APIRouter()
 async def login_users(
     *, session: async_session, login_detail: loginUser, response: Response
 ):
-
     token = await login_user(session=session, user_login=login_detail)
     response.set_cookie(
         key="fickel_token", value=token, expires=(settings.JWT_EXPIRY_TIME * 3600)

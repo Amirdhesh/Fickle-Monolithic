@@ -17,7 +17,7 @@ async def add_to_wishlist(
     *,
     session: async_session,
     problemstatement_id: str,
-    fickel_token: Annotated[str | None, Cookie()] = None
+    fickel_token: Annotated[str | None, Cookie()] = None,
 ):
     data = await user_credentials(token=fickel_token)
     await add_problemstatement_to_wishlist(
@@ -31,7 +31,7 @@ async def remove_from_wishlist(
     *,
     session: async_session,
     problemstatement_id: str,
-    fickel_token: Annotated[str | None, Cookie()] = None
+    fickel_token: Annotated[str | None, Cookie()] = None,
 ):
     data = await user_credentials(token=fickel_token)
     await delete_wishlist(

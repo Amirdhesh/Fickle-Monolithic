@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio.session import AsyncSession
 from app.crud.problemstatment import verify_problemstatment
 
 
-async def add_solution(
+async def contribute(
     *,
     session: AsyncSession,
     problemstatement_id: UUID,
@@ -31,7 +31,7 @@ async def add_solution(
         raise HTTPException(status_code=409, detail="Unable to add.")
 
 
-async def solution_delete(
+async def delete(
     *,
     session: AsyncSession,
     problemstatement_id: UUID,
@@ -51,7 +51,7 @@ async def solution_delete(
         raise HTTPException(status_code=404, detail="Unable to delete")
 
 
-async def update_solution(
+async def edit(
     *,
     session: AsyncSession,
     problemstatement_id: UUID,
