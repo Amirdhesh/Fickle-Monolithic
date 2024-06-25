@@ -1,5 +1,6 @@
 from typing import Annotated
-from fastapi import Cookie, APIRouter, Response, HTTPException
+from fastapi_limiter.depends import RateLimiter
+from fastapi import Cookie, Depends, APIRouter, Response, HTTPException
 from app.schema.user import userCreate, message
 from app.core.db_init import async_session, redis_connection
 from app.schema.user import userCreate, userRead, changePassword, userProfile
@@ -74,7 +75,7 @@ async def Password_change(
     return message(message="User updated successfully.")
 
 
-@route.get("/profile", status_code=200, response_model=userProfile)
+@route.get("/profile", status_code=200, response_model=userProfile,dependencies=[Depends(RateLimiter(times=1,seconds=10))])
 async def profile_user(
     *, session: async_session, fickel_token: Annotated[str | None, Cookie()] = None
 ):

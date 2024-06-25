@@ -1,5 +1,6 @@
 from typing import Annotated, List
-from fastapi import APIRouter, Cookie, HTTPException
+from fastapi import APIRouter, Cookie, Depends
+from fastapi_limiter.depends import RateLimiter
 from app.core.security import user_credentials
 from app.core.db_init import async_session
 from app.schema.problemstatement import message, problemstatementwishlist
@@ -12,7 +13,7 @@ from app.crud.problemstatment import (
 route = APIRouter()
 
 
-@route.post("/{problemstatement_id}/add_to_wishlist", status_code=200)
+@route.post("/{problemstatement_id}/add_to_wishlist", status_code=200,dependencies=[Depends(RateLimiter(times=2,seconds=5))])
 async def add_to_wishlist(
     *,
     session: async_session,
@@ -26,7 +27,7 @@ async def add_to_wishlist(
     return message(message="Added to wishlist.")
 
 
-@route.delete("/{problemstatement_id}/remove_from_wishlist", status_code=204)
+@route.delete("/{problemstatement_id}/remove_from_wishlist", status_code=204,dependencies=[Depends(RateLimiter(times=2,seconds=5))])
 async def remove_from_wishlist(
     *,
     session: async_session,
@@ -41,7 +42,7 @@ async def remove_from_wishlist(
 
 
 @route.get(
-    "/display_wishlist", status_code=200, response_model=List[problemstatementwishlist]
+    "/display_wishlist", status_code=200, response_model=List[problemstatementwishlist],dependencies=[Depends(RateLimiter(times=2,seconds=5))]
 )
 async def wishlist_display(
     *, session: async_session, fickel_token: Annotated[str | None, Cookie()] = None

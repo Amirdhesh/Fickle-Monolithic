@@ -1,5 +1,6 @@
 from typing import Annotated
-from fastapi import APIRouter, Cookie
+from fastapi import APIRouter, Cookie, Depends
+from fastapi_limiter.depends import RateLimiter
 from app.core.security import user_credentials
 from app.core.db_init import async_session
 from app.schema.solution import solutionCreate, message, solutionUpdate, solutionRead
@@ -13,7 +14,7 @@ from app.crud.solution import (
 route = APIRouter()
 
 
-@route.post("/{problemstatement_id}/post-solution", status_code=200)
+@route.post("/{problemstatement_id}/post-solution", status_code=200,dependencies=[Depends(RateLimiter(times=1,seconds=5))])
 async def post_solution(
     *,
     session: async_session,
@@ -31,7 +32,7 @@ async def post_solution(
     return message(message="Posted successfully.")
 
 
-@route.delete("/{problemstatement_id}/delete-solution/{solution_id}", status_code=204)
+@route.delete("/{problemstatement_id}/delete-solution/{solution_id}", status_code=204,dependencies=[Depends(RateLimiter(times=2,seconds=5))])
 async def delete_solution(
     *,
     session: async_session,
@@ -49,7 +50,7 @@ async def delete_solution(
     return message(message="Posted successfully.")
 
 
-@route.patch("/{problemstatement_id}/edit-solution/{solution_id}", status_code=200)
+@route.patch("/{problemstatement_id}/edit-solution/{solution_id}", status_code=200,dependencies=[Depends(RateLimiter(times=2,seconds=5))])
 async def edit_problemstatement(
     *,
     session: async_session,
@@ -73,6 +74,7 @@ async def edit_problemstatement(
     "/{problemstatement_id}/display_solutions",
     status_code=200,
     response_model=list[solutionRead],
+    dependencies=[Depends(RateLimiter(times=1,seconds=10))]
 )
 async def problemstatement_solutions(
     *,

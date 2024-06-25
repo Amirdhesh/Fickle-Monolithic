@@ -1,5 +1,6 @@
 from typing import Annotated, List
-from fastapi import APIRouter, Cookie
+from fastapi import APIRouter, Cookie, Depends
+from fastapi_limiter.depends import RateLimiter
 from app.core.security import user_credentials
 from app.core.db_init import async_session
 from app.schema.problemstatement import (
@@ -22,7 +23,7 @@ from app.crud.problemstatment import (
 route = APIRouter()
 
 
-@route.post("/post-problemstatement", status_code=201)
+@route.post("/post-problemstatement", status_code=201,dependencies=[Depends(RateLimiter(times=2,seconds=5))])
 async def post_problemstatement(
     *,
     session: async_session,
@@ -34,7 +35,7 @@ async def post_problemstatement(
     return message(message="Problemstatement added successfully.")
 
 
-@route.delete("/delete-problemstatement/{problemstatement_id}", status_code=204)
+@route.delete("/delete-problemstatement/{problemstatement_id}", status_code=204,dependencies=[Depends(RateLimiter(times=2,seconds=5))])
 async def delete_problemstatement(
     *,
     session: async_session,
@@ -49,7 +50,7 @@ async def delete_problemstatement(
     return message(message="Successfully deleted.")
 
 
-@route.patch("/edit-problemstatement/{problemstatement_id}", status_code=201)
+@route.patch("/edit-problemstatement/{problemstatement_id}", status_code=201,dependencies=[Depends(RateLimiter(times=2,seconds=5))])
 async def edit_problemstatement(
     *,
     session: async_session,
@@ -67,7 +68,7 @@ async def edit_problemstatement(
     return message(message="Edited successfully.")
 
 
-@route.post("/like/{problemstatement_id}", status_code=201)
+@route.post("/like/{problemstatement_id}", status_code=201,dependencies=[Depends(RateLimiter(times=1,seconds=10))])
 async def like_problemstatement(
     *,
     session: async_session,
@@ -85,6 +86,7 @@ async def like_problemstatement(
     "/display_problemstatements",
     status_code=200,
     response_model=List[problemstatementRead],
+    dependencies=[Depends(RateLimiter(times=1,seconds=10))]
 )
 async def display_problemstatment(
     *, session: async_session, fickel_token: Annotated[str | None, Cookie()] = None
@@ -94,7 +96,7 @@ async def display_problemstatment(
     return problemstatements
 
 
-@route.get("/search", status_code=200, response_model=List[problemstatementSearch])
+@route.get("/search", status_code=200, response_model=List[problemstatementSearch],dependencies=[Depends(RateLimiter(times=1,seconds=5))])
 async def search_problemstatement(
     *,
     session: async_session,

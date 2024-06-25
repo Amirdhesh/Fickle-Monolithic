@@ -1,42 +1,40 @@
 import time
 import uvicorn
-import configparser
 import logging
 import logging.config
 from math import ceil
 from app.api.api_v1.api import api
 from app.core.settings import settings
-from app.core.db_init import redis_connection
+from redis.asyncio import Redis
 from fastapi import FastAPI, Request, Response, HTTPException
 from contextlib import asynccontextmanager
 from fastapi_limiter import FastAPILimiter
 
-config = configparser.ConfigParser()
-config.read(settings.LOGGING_INI)
-config["handler_fileHandler"]["args"] = (
-    f"('{settings.LOG_FILE_NAME}', {settings.LOG_FILE_SIZE}, {settings.LOG_FILE_BACKUP})"
-)
-config.set("handler_LogtailHandler", "args", f"('{settings.LOGGING_PLATFORM_TOKEN}',)")
-with open(settings.LOGGING_INI, "w") as configfile:
-    config.write(configfile)
+
 logging.config.fileConfig(fname=settings.LOGGING_INI)
 logger = logging.getLogger(__name__)
 
 
-# async def custom_callback(request: Request, response: Response, pexpire: int):
-#     expire = ceil(pexpire / 1000)
-#     raise HTTPException(
-#         status_code=492, detail=f"Too Many Requests. Retry after {expire} seconds."
-#     )
+async def custom_callback(request: Request, response: Response, pexpire: int):
+    expire = ceil(pexpire / 1000)
+    raise HTTPException(
+        status_code=492, detail=f"Too Many Requests. Retry after {expire} seconds."
+    )
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    # await FastAPILimiter.init(redis=redis_connection, http_callback=custom_callback)
+    redis_connection = Redis(
+        host=settings.REDIS_HOST,
+        port=settings.REDIS_PORT,
+        db=settings.REDIS_DB,
+        decode_responses=True,
+    )
     logger.info("<<<Staring API server...>>>")
+    await FastAPILimiter.init(redis=redis_connection, http_callback=custom_callback)
     yield
     logger.info("<<<Shuting down API server...>>>")
-    # await FastAPILimiter.close()
+    await FastAPILimiter.close()
 
 
 app = FastAPI(
@@ -71,6 +69,11 @@ async def logging_middleware(request: Request, call_next):
 
 
 app.include_router(api)
+
+
+@app.get("/health")
+async def checkUp():
+    return {"Health": "Good"}
 
 
 if __name__ == "__main__":
