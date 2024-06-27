@@ -11,7 +11,7 @@ from contextlib import asynccontextmanager
 from fastapi_limiter import FastAPILimiter
 
 
-logging.config.fileConfig(fname=settings.LOGGING_INI)
+logging.basicConfig(filename="fickel.log",level=logging.INFO,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 
