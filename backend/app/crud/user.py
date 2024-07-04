@@ -46,8 +46,8 @@ async def login_user(*, session: AsyncSession, user_login: loginUser):
                 return await create_token(id=user.id, email=user.email)
             raise ValueError("Invalid password")
         raise ValueError("Invalid Email/Password")
-    except Exception:
-        raise HTTPException(status_code=401, detail=f"Unable to login")
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Unable to login{e}")
 
 
 async def change_password(*, session: AsyncSession, id: UUID, password: changePassword):

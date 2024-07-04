@@ -3,6 +3,7 @@ from fastapi import APIRouter, Cookie, Depends
 from fastapi_limiter.depends import RateLimiter
 from app.core.security import user_credentials
 from app.core.db_init import async_session
+from fastapi_pagination import Page, paginate
 from app.schema.problemstatement import (
     problemstatementCreate,
     message,
@@ -85,7 +86,7 @@ async def like_problemstatement(
 @route.get(
     "/display_problemstatements",
     status_code=200,
-    response_model=List[problemstatementRead],
+    response_model=Page[problemstatementRead],
     dependencies=[Depends(RateLimiter(times=1,seconds=10))]
 )
 async def display_problemstatment(
@@ -93,7 +94,7 @@ async def display_problemstatment(
 ):
     await user_credentials(token=fickel_token)
     problemstatements = await display_problemstatements(session=session)
-    return problemstatements
+    return paginate(problemstatements)
 
 
 @route.get("/search", status_code=200, response_model=List[problemstatementSearch],dependencies=[Depends(RateLimiter(times=1,seconds=5))])

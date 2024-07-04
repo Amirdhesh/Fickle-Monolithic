@@ -9,6 +9,7 @@ from redis.asyncio import Redis
 from fastapi import FastAPI, Request, Response, HTTPException
 from contextlib import asynccontextmanager
 from fastapi_limiter import FastAPILimiter
+from fastapi_pagination import add_pagination
 
 
 logging.basicConfig(filename="fickel.log",level=logging.INFO,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -49,6 +50,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+add_pagination(app)
 
 @app.middleware("http")
 async def logging_middleware(request: Request, call_next):

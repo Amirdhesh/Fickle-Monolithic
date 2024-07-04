@@ -3,6 +3,7 @@ from fastapi import APIRouter, Cookie, Depends
 from fastapi_limiter.depends import RateLimiter
 from app.core.security import user_credentials
 from app.core.db_init import async_session
+from fastapi_pagination import Page, paginate
 from app.schema.solution import solutionCreate, message, solutionUpdate, solutionRead
 from app.crud.solution import (
     contribute,
@@ -73,7 +74,7 @@ async def edit_problemstatement(
 @route.get(
     "/{problemstatement_id}/display_solutions",
     status_code=200,
-    response_model=list[solutionRead],
+    response_model=Page[solutionRead],
     dependencies=[Depends(RateLimiter(times=1,seconds=10))]
 )
 async def problemstatement_solutions(
@@ -86,4 +87,4 @@ async def problemstatement_solutions(
     solutions = await display_solution(
         session=session, problemstatement_id=problemstatement_id
     )
-    return solutions
+    return paginate(solutions)
